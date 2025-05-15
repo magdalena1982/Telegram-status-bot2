@@ -1,13 +1,14 @@
+import os
 import asyncio
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 import requests
 
-api_id = 20375615
-api_hash = 'a42c3d95a903f070a77dc8fdea40a6e4'
-bot_token = '7571531890:AAEZkeQNUrK4MhowVPdOPVCiXV0Nh6w2RKc'
-chat_id = 7029563819
-user_id_to_track = 5000291224
+api_id = int(os.getenv('API_ID'))  # zdefiniuj zmienną API_ID w Render
+api_hash = os.getenv('API_HASH')   # zdefiniuj zmienną API_HASH w Render
+bot_token = os.getenv('BOT_TOKEN') # zdefiniuj zmienną BOT_TOKEN w Render
+chat_id = int(os.getenv('CHAT_ID'))  # również możesz zrobić chat_id zmienną środowiskową
+user_id_to_track = int(os.getenv('USER_ID_TO_TRACK'))  # i user_id_to_track
 
 was_online = False
 
