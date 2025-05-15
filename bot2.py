@@ -1,66 +1,44 @@
-import asyncio
 import os
-from telethon import TelegramClient
-from telethon.errors import FloodWaitError
-from telethon.tl.types import UserStatusOnline
-import requests
+import asyncio
+from telethon import TelegramClient, events
+from telethon.errors import SessionPasswordNeededError
 
+# Wczytanie zmiennych środowiskowych
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
 bot_token = os.getenv("BOT_TOKEN")
 chat_id = int(os.getenv("CHAT_ID"))
+user_id_to_track = int(os.getenv("USER_ID_TO_TRACK"))
 user_to_track = os.getenv("USER_TO_TRACK")
 
-was_online = False
-client = TelegramClient("bot", api_id, api_hash)
+print("==> Startuję bota...")
 
-
-async def wait_for_floodwait(seconds):
-    print(f"FloodWaitError: muszę poczekać {seconds} sekund...")
-    await asyncio.sleep(seconds)
-    print("Spróbuję ponownie...")
-
+# Tworzenie klienta
+client = TelegramClient('bot_session', api_id, api_hash)
 
 async def main():
-    global was_online
-
-    # Próba logowania z obsługą FloodWaitError
-    while True:
-        try:
-            await client.start(bot_token=bot_token)
-            print("Bot uruchomiony. Czekam na status online...")
-            break
-        except FloodWaitError as e:
-            await wait_for_floodwait(e.seconds)
-
     try:
-        user = await client.get_entity(user_to_track)
-    except ValueError:
-        print(f"Nie udało się znaleźć użytkownika: {user_to_track}. Sprawdź, czy bot ma z nim kontakt.")
-        return
+        await client.start(bot_token=bot_token)
+        print("==> Bot wystartował i jest online.")
+        await client.send_message(chat_id, "Bot został uruchomiony na Render!")
 
-    while True:
+        # Nasłuchiwanie wiadomości od śledzonego użytkownika
+        @client.on(events.NewMessage(from_users=user_id_to_track))
+        async def handler(event):
+            print(f"==> Nowa wiadomość od {user_id_to_track}: {event.text}")
+            await client.send_message(chat_id, f"Użytkownik {user_to_track} napisał: {event.text}")
+
+        await client.run_until_disconnected()
+
+    except SessionPasswordNeededError:
+        print("==> Potrzebne hasło dwuskładnikowe (2FA), a bot go nie obsługuje.")
+    except Exception as e:
+        print(f"==> Błąd krytyczny: {e}")
         try:
-            user = await client.get_entity(user.id)  # odświeżenie danych użytkownika
-            status = user.status
+            await client.send_message(chat_id, f"Błąd bota: {e}")
+        except:
+            print("==> Nie można wysłać wiadomości o błędzie do Telegrama.")
 
-            if isinstance(status, UserStatusOnline) and not was_online:
-                message = f"{user.first_name} jest ONLINE!"
-                url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-                requests.post(url, data={'chat_id': chat_id, 'text': message})
-                was_online = True
-
-            if not isinstance(status, UserStatusOnline):
-                was_online = False
-
-            await asyncio.sleep(10)
-
-        except FloodWaitError as e:
-            await wait_for_floodwait(e.seconds)
-        except Exception as e:
-            print(f"Wystąpił nieoczekiwany błąd: {e}")
-            await asyncio.sleep(10)
-
-
-if __name__ == "__main__":
-    asyncio.run(main()) 
+# Uruchomienie
+with client:
+    client.loop.run_until_complete(main())
