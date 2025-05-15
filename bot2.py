@@ -1,14 +1,17 @@
-import os
 import asyncio
+import os
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 import requests
+from dotenv import load_dotenv
 
-api_id = int(os.getenv('API_ID'))  # zdefiniuj zmienną API_ID w Render
-api_hash = os.getenv('API_HASH')   # zdefiniuj zmienną API_HASH w Render
-bot_token = os.getenv('BOT_TOKEN') # zdefiniuj zmienną BOT_TOKEN w Render
-chat_id = int(os.getenv('CHAT_ID'))  # również możesz zrobić chat_id zmienną środowiskową
-user_id_to_track = int(os.getenv('USER_ID_TO_TRACK'))  # i user_id_to_track
+load_dotenv()  # Ładuje zmienne z .env w trakcie lokalnych testów
+
+api_id = int(os.getenv("API_ID"))
+api_hash = os.getenv("API_HASH")
+bot_token = os.getenv("BOT_TOKEN")
+chat_id = int(os.getenv("CHAT_ID"))
+user_to_track = os.getenv("USER_TO_TRACK")  # username (bez @) lub ID jako tekst
 
 was_online = False
 
@@ -20,8 +23,13 @@ async def main():
 
     global was_online
 
+    try:
+        user = await client.get_entity(user_to_track)
+    except ValueError:
+        print(f"Nie udało się znaleźć użytkownika: {user_to_track}. Sprawdź, czy bot ma z nim kontakt.")
+        return
+
     while True:
-        user = await client.get_entity(user_id_to_track)
         status = user.status
 
         if isinstance(status, UserStatusOnline) and not was_online:
