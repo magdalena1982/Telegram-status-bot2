@@ -3,9 +3,6 @@ import os
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 import requests
-from dotenv import load_dotenv
-
-load_dotenv()  # Ładuje zmienne z .env w trakcie lokalnych testów
 
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
