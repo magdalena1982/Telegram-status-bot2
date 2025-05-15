@@ -1,9 +1,8 @@
 import os
 import asyncio
 from telethon import TelegramClient, events
-from telethon.errors import SessionPasswordNeededError
 
-# Wczytanie zmiennych środowiskowych
+# Zmienne środowiskowe
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
 bot_token = os.getenv("BOT_TOKEN")
@@ -13,32 +12,20 @@ user_to_track = os.getenv("USER_TO_TRACK")
 
 print("==> Startuję bota...")
 
-# Tworzenie klienta
+# Tworzenie klienta z tokenem bota
 client = TelegramClient('bot_session', api_id, api_hash)
 
 async def main():
-    try:
-        await client.start(bot_token=bot_token)
-        print("==> Bot wystartował i jest online.")
-        await client.send_message(chat_id, "Bot został uruchomiony na Render!")
+    await client.start(bot_token=bot_token)
+    print("==> Bot zalogowany jako bot i gotowy.")
+    await client.send_message(chat_id, "Bot uruchomiony!")
 
-        # Nasłuchiwanie wiadomości od śledzonego użytkownika
-        @client.on(events.NewMessage(from_users=user_id_to_track))
-        async def handler(event):
-            print(f"==> Nowa wiadomość od {user_id_to_track}: {event.text}")
-            await client.send_message(chat_id, f"Użytkownik {user_to_track} napisał: {event.text}")
+    @client.on(events.NewMessage(from_users=user_id_to_track))
+    async def handle_message(event):
+        print(f"==> Wiadomość od {user_to_track}: {event.text}")
+        await client.send_message(chat_id, f"{user_to_track} napisał:\n{event.text}")
 
-        await client.run_until_disconnected()
-
-    except SessionPasswordNeededError:
-        print("==> Potrzebne hasło dwuskładnikowe (2FA), a bot go nie obsługuje.")
-    except Exception as e:
-        print(f"==> Błąd krytyczny: {e}")
-        try:
-            await client.send_message(chat_id, f"Błąd bota: {e}")
-        except:
-            print("==> Nie można wysłać wiadomości o błędzie do Telegrama.")
+    await client.run_until_disconnected()
 
 # Uruchomienie
-with client:
-    client.loop.run_until_complete(main())
+client.loop.run_until_complete(main())
