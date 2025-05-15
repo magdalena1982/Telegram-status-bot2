@@ -22,7 +22,7 @@ api_hash = os.getenv("API_HASH")
 chat_id = int(os.getenv("CHAT_ID"))
 user_to_track = os.getenv("USER_TO_TRACK")
 
-client = TelegramClient('user_session', api_id, api_hash)
+client = TelegramClient('session_name', api_id, api_hash)
 
 async def main():
     await client.start()
