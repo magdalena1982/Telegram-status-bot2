@@ -2,7 +2,6 @@ import asyncio
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 import requests
-import time
 
 api_id = 20375615
 api_hash = 'a42c3d95a903f070a77dc8fdea40a6e4'
@@ -35,5 +34,5 @@ async def main():
 
         await asyncio.sleep(10)
 
-with client:
-    client.loop.run_until_complete(main())
+if __name__ == "__main__":
+    asyncio.run(main())
