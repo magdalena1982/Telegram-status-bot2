@@ -6,7 +6,7 @@ from telethon.tl.types import UserStatusOnline
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
 chat_id = int(os.getenv("CHAT_ID"))
-user_to_track = int(os.getenv("USER_TO_TRACK"))
+user_to_track = os.getenv("USER_TO_TRACK")
 
 client = TelegramClient('user_session', api_id, api_hash)
 
