@@ -1,43 +1,49 @@
 import os
 import asyncio
-from telethon import TelegramClient, events
+import requests
+from telethon import TelegramClient
+from telethon.tl.functions.users import GetFullUserRequest
+from telethon.tl.types import UserStatusOnline
 
 # Zmienne środowiskowe
 api_id = int(os.getenv("API_ID"))
 api_hash = os.getenv("API_HASH")
 bot_token = os.getenv("BOT_TOKEN")
 chat_id = int(os.getenv("CHAT_ID"))
-user_id_to_track = int(os.getenv("USER_ID_TO_TRACK"))
-user_to_track = os.getenv("USER_TO_TRACK")
+user_to_track = os.getenv("USER_TO_TRACK")  # może być username bez @ lub user_id jako string/liczba
 
 print("==> Startuję bota...")
 
-# Tworzenie klienta z tokenem bota
-client = TelegramClient('bot_session', api_id, api_hash)
+client = TelegramClient("bot_session", api_id, api_hash)
 
 async def main():
     await client.start(bot_token=bot_token)
     print("==> Bot zalogowany jako bot i gotowy.")
     await client.send_message(chat_id, "Bot uruchomiony!")
 
-was_online = False
+    was_online = False
 
     while True:
-        user = client.get_entity(user_id_to_track)
-        user_info = client.get_peer_id(user)
-        status = user.status
+        try:
+            user = await client.get_entity(user_to_track)
+            full = await client(GetFullUserRequest(user.id))
+            status = full.user.status
 
-        if isinstance(status, UserStatusOnline) and not was_online:
-            # Wyślij powiadomienie przez bota
-            message = f"{user.first_name} jest ONLINE!"
-            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
-            requests.post(url, data={'chat_id': chat_id, 'text': message})
-            was_online = True
+            if isinstance(status, UserStatusOnline) and not was_online:
+                message = f"{user.first_name} jest ONLINE!"
+                print("==>", message)
+                requests.post(
+                    f"https://api.telegram.org/bot{bot_token}/sendMessage",
+                    data={'chat_id': chat_id, 'text': message}
+                )
+                was_online = True
 
-        if not isinstance(status, UserStatusOnline):
-            was_online = False
+            elif not isinstance(status, UserStatusOnline):
+                was_online = False
 
-        time.sleep(60)  # sprawdza co 60 sekund
+        except Exception as e:
+            print("Błąd podczas sprawdzania statusu:", e)
 
-# Uruchomienie
+        await asyncio.sleep(60)
+
 asyncio.run(main())
