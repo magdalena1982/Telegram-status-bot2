@@ -11,7 +11,13 @@ user_id_to_track = 5000291224  # ID osoby, którą chcesz śledzić
 
 was_online = False
 
-with TelegramClient('session_name', api_id, api_hash) as client:
+from telethon import TelegramClient
+api_id = 20375615
+api_hash = 'a42c3d95a903f070a77dc8fdea40a6e4'
+bot_token = '7571531890:AAEZkeQNUrK4MhowVPdOPVCiXV0Nh6w2RKc'
+client = TelegramClient('bot' api_od, api_hash).start(bot_token=bot_token)
+
+#with TelegramClient('session_name', api_id, api_hash) as client:
     print("Bot uruchomiony. Czekam na status online...")
     while True:
         user = client.get_entity(user_id_to_track)
