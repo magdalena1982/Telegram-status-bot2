@@ -44,6 +44,6 @@ async def main():
         except Exception as e:
             print("Błąd podczas sprawdzania statusu:", e)
 
-        await asyncio.sleep(60)
+        await asyncio.sleep(10)
 
 asyncio.run(main())
