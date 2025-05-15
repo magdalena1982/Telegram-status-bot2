@@ -1,4 +1,18 @@
 import os
+import base64
+
+session_file = 'session_name.session'
+
+if not os.path.exists(session_file):
+    encoded = os.getenv('SESSION_BASE64')
+    if encoded:
+        with open(session_file, 'wb') as f:
+            f.write(base64.b64decode(encoded))
+    else:
+        print("Brak zmiennej SESSION_BASE64!")
+
+
+import os
 import asyncio
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
