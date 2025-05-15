@@ -42,6 +42,6 @@ async def main():
         elif not isinstance(status, UserStatusOnline):
             was_online = False
         
-        await asyncio.sleep(10)  # sprawdzaj co 60 sekund
+        await asyncio.sleep(1)  # sprawdzaj co 60 sekund
 
 asyncio.run(main())
