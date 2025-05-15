@@ -20,12 +20,24 @@ async def main():
     print("==> Bot zalogowany jako bot i gotowy.")
     await client.send_message(chat_id, "Bot uruchomiony!")
 
-    @client.on(events.NewMessage(from_users=user_id_to_track))
-    async def handle_message(event):
-        print(f"==> Wiadomość od {user_to_track}: {event.text}")
-        await client.send_message(chat_id, f"{user_to_track} napisał:\n{event.text}")
+was_online = False
 
-    await client.run_until_disconnected()
+    while True:
+        user = client.get_entity(user_id_to_track)
+        user_info = client.get_peer_id(user)
+        status = user.status
+
+        if isinstance(status, UserStatusOnline) and not was_online:
+            # Wyślij powiadomienie przez bota
+            message = f"{user.first_name} jest ONLINE!"
+            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+            requests.post(url, data={'chat_id': chat_id, 'text': message})
+            was_online = True
+
+        if not isinstance(status, UserStatusOnline):
+            was_online = False
+
+        time.sleep(60)  # sprawdza co 60 sekund
 
 # Uruchomienie
-client.loop.run_until_complete(main())
+asyncio.run(main())
