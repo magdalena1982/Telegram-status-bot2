@@ -17,8 +17,8 @@ import asyncio
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 
-api_id = int(os.getenv("API2_ID"))
-api_hash = os.getenv("API2_HASH")
+api_id = int(os.getenv("API_ID2"))
+api_hash = os.getenv("API_HASH2")
 chat_id = int(os.getenv("CHAT_ID"))
 user_to_track = os.getenv("USER_TO_TRACK")
 
