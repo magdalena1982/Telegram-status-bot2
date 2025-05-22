@@ -4,7 +4,7 @@ import base64
 session_file = 'session_name.session'
 
 if not os.path.exists(session_file):
-    encoded = os.getenv('SESSION_BASE64')
+    encoded = os.getenv('SESSION2_BASE64')
     if encoded:
         with open(session_file, 'wb') as f:
             f.write(base64.b64decode(encoded))
@@ -17,8 +17,8 @@ import asyncio
 from telethon import TelegramClient
 from telethon.tl.types import UserStatusOnline
 
-api_id = int(os.getenv("API_ID"))
-api_hash = os.getenv("API_HASH")
+api_id = int(os.getenv("API2_ID"))
+api_hash = os.getenv("API2_HASH")
 chat_id = int(os.getenv("CHAT_ID"))
 user_to_track = os.getenv("USER_TO_TRACK")
 
