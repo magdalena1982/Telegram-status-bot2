@@ -36,10 +36,10 @@ async def main():
                 elif not isinstance(status, UserStatusOnline):
                     was_online = False
 
-                await asyncio.sleep(5)
+                await asyncio.sleep(1)
             except Exception as e:
                 print(f"❌ Błąd w pętli: {e}")
-                await asyncio.sleep(10)
+                await asyncio.sleep(5)
     except AuthKeyDuplicatedError:
         print("❌ Sesja używana na innym IP. Zresetuj sesję.")
     finally:
