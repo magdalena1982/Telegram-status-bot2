@@ -8,7 +8,7 @@ from telethon.errors import AuthKeyDuplicatedError
 # Dane logowania z ENV
 api_id = int(os.getenv("API_ID2"))
 api_hash = os.getenv("API_HASH2")
-session_string = os.getenv("SESSION_STRING2")
+session_string = os.getenv("SESSION2_BASE64")
 chat_id = int(os.getenv("CHAT_ID2"))
 user_to_track = os.getenv("USER_TO_TRACK")
 
